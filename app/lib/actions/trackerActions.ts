@@ -13,7 +13,7 @@ export async function createTracker({
   });
 
   try {
-    const data = await safepay.payments.session.setup({
+    const { data } = await safepay.payments.session.setup({
       merchant_api_key: publicKey,
       intent: "CYBERSOURCE",
       mode: "payment",
@@ -21,8 +21,10 @@ export async function createTracker({
       amount: 1000,
     });
 
-    return data;
+    return data.tracker.token;
   } catch (error) {
-    console.log(error);
+    return {
+      message: "API Error: Failed to fetch tracker data.",
+    };
   }
 }

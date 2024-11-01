@@ -8,7 +8,7 @@ export type customerProps = {
 };
 
 export type safepayUrlProps = {
-  tbt: string[];
-  tracker: string[];
-  env: string[];
+  tbt: string;
+  tracker: string;
+  env: string;
 };
