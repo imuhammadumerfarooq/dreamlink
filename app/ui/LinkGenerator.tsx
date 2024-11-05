@@ -8,14 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import {
   Drawer,
   DrawerClose,
@@ -32,13 +25,12 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { createURL } from "../lib/actions/formActions";
 import Link from "next/link";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const initialState = { message: "" };
 
@@ -47,6 +39,10 @@ export default function LinkGenerator() {
     createURL,
     initialState
   );
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  const [isCustomerChecked, setIsCustomerChecked] = useState(false);
 
   useEffect(() => {
     console.log(state);
@@ -58,8 +54,20 @@ export default function LinkGenerator() {
       secretKey: "",
       publicKey: "",
       environment: "development",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      country: "",
+      isGuest: false,
     },
   });
+
+  const handleCheckboxChange = () => {
+    setIsVisible(!isVisible);
+
+    setIsCustomerChecked(!isCustomerChecked);
+  };
 
   return (
     <Form {...form}>
@@ -118,7 +126,7 @@ export default function LinkGenerator() {
                       name="environment"
                       type="radio"
                       value="development"
-                      className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                      className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2 "
                     />
                     <label
                       htmlFor="development"
@@ -161,7 +169,108 @@ export default function LinkGenerator() {
               </div>
             </fieldset>
 
-            <Button variant="submit" disabled={isPending}>
+            <div className="flex flex-col items-start">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="customer"
+                  defaultChecked={isVisible}
+                  onCheckedChange={handleCheckboxChange}
+                />
+                <label htmlFor="customer" className="text-sm font-medium py-2">
+                  Create a new Customer
+                </label>
+              </div>
+
+              {isVisible && (
+                <>
+                  <div className="h-500px space-y-4 w-full">
+                    <div className="flex w-[375px] gap-4">
+                      <FormField
+                        control={form.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input placeholder="First Name" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <Input placeholder="Last Name" {...field} />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Email" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phoneNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Phone Number" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Country" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="isGuest"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                name="isGuest"
+                                id="guest"
+                                defaultChecked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                              <label
+                                htmlFor="guest"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                Guest
+                              </label>
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            <Button variant="submit" disabled={isPending} type="submit">
               {isPending ? (
                 <Loader2 className="flex justify-center mr-2 h-4 w-4 animate-spin" />
               ) : (
