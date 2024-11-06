@@ -31,7 +31,7 @@ export async function createCustomerToken({
       email: email,
       phone_number: phoneNumber,
       country: country,
-      is_guest: isGuest,
+      is_guest: true,
     });
 
     return data.token;

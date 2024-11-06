@@ -13,8 +13,6 @@ export async function createURL(prevState: any, formData: FormData) {
     environment: formData.get("environment"),
   });
 
-  console.log(validatedFields);
-
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -28,7 +26,7 @@ export async function createURL(prevState: any, formData: FormData) {
   const email = formData.get("email") as string | null;
   const phoneNumber = formData.get("phoneNumber") as string | null;
   const country = formData.get("country") as string | null;
-  const isGuest = formData.get("isGuest") === "true";
+  const isGuest = formData.get("isGuest") === "on";
 
   try {
     const tbt = await createTBT({
@@ -52,7 +50,7 @@ export async function createURL(prevState: any, formData: FormData) {
         country: country || "",
         isGuest: isGuest,
       });
-      console.log(customerToken);
+      console.log({ customerToken });
     }
 
     const url = `${Host[environment]}/embedded?environment=${environment}&tbt=${tbt}&tracker=${tracker}`;

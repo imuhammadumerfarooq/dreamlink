@@ -42,8 +42,6 @@ export default function LinkGenerator() {
 
   const [isVisible, setIsVisible] = useState(false);
 
-  const [isCustomerChecked, setIsCustomerChecked] = useState(false);
-
   useEffect(() => {
     console.log(state);
   }, [state]);
@@ -65,8 +63,6 @@ export default function LinkGenerator() {
 
   const handleCheckboxChange = () => {
     setIsVisible(!isVisible);
-
-    setIsCustomerChecked(!isCustomerChecked);
   };
 
   return (
@@ -251,8 +247,12 @@ export default function LinkGenerator() {
                               <Checkbox
                                 name="isGuest"
                                 id="guest"
-                                defaultChecked={field.value}
-                                onCheckedChange={field.onChange}
+                                checked={field.value}
+                                onCheckedChange={(checked) => {
+                                  field.onChange(checked);
+
+                                  console.log(checked);
+                                }}
                               />
                               <label
                                 htmlFor="guest"
