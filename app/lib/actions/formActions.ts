@@ -11,6 +11,12 @@ export async function createURL(prevState: any, formData: FormData) {
     secretKey: formData.get("secretKey"),
     publicKey: formData.get("publicKey"),
     environment: formData.get("environment"),
+    firstName: formData.get("firstName") ?? "",
+    lastName: formData.get("lastName") ?? "",
+    email: formData.get("email") ?? "",
+    phoneNumber: formData.get("phoneNumber") ?? "",
+    country: formData.get("country") ?? "",
+    isGuest: formData.get("isGuest") === "on",
   });
 
   if (!validatedFields.success) {
@@ -19,14 +25,17 @@ export async function createURL(prevState: any, formData: FormData) {
     };
   }
 
-  const { secretKey, publicKey, environment } = validatedFields.data;
-
-  const firstName = formData.get("firstName") as string | null;
-  const lastName = formData.get("lastName") as string | null;
-  const email = formData.get("email") as string | null;
-  const phoneNumber = formData.get("phoneNumber") as string | null;
-  const country = formData.get("country") as string | null;
-  const isGuest = formData.get("isGuest") === "on";
+  const {
+    secretKey,
+    publicKey,
+    environment,
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    country,
+    isGuest,
+  } = validatedFields.data;
 
   try {
     const tbt = await createTBT({
@@ -39,16 +48,16 @@ export async function createURL(prevState: any, formData: FormData) {
       host: Host[environment],
     });
 
-    if (isGuest === true) {
+    if (firstName || lastName || email || phoneNumber || country) {
       const customerToken = await createCustomerToken({
         secretKey: secretKey,
         host: Host[environment],
-        firstName: firstName || "",
-        lastName: lastName || "",
-        email: email || "",
-        phoneNumber: phoneNumber || "",
-        country: country || "",
-        isGuest: isGuest,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phoneNumber: phoneNumber,
+        country: country,
+        isGuest: isGuest ?? false,
       });
       console.log({ customerToken });
     }

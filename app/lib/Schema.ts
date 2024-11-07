@@ -12,38 +12,15 @@ const KeysSchema = z.object({
   }),
 });
 
-const userSchema = z.object({
-  firstName: z
-    .string()
-    .min(3, {
-      message: "Atleat 3 characters.",
-    })
-    .optional(),
-  lastName: z
-    .string()
-    .min(3, {
-      message: "Atleast 3 characters.",
-    })
-    .optional(),
-  email: z
-    .string()
-    .min(10, {
-      message: "Atleast 10 characters.",
-    })
-    .optional(),
-  phoneNumber: z
-    .string()
-    .min(10, {
-      message: "Number should be a 10 characters.",
-    })
-    .optional(),
-  country: z
-    .string()
-    .min(2, {
-      message: "Enter a correct country code.",
-    })
-    .optional(),
-  isGuest: z.boolean().default(false),
-});
+const userSchema = z
+  .object({
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    email: z.string().optional(),
+    phoneNumber: z.string().optional(),
+    country: z.string().optional(),
+    isGuest: z.boolean(),
+  })
+  .partial();
 
 export const formSchema = KeysSchema.merge(userSchema);
