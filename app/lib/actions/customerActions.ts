@@ -37,7 +37,7 @@ export async function createCustomerToken({
     return data.token;
   } catch (error) {
     return {
-      message: "API Error: Failed to fetch tbt data.",
+      message: "API Error: Failed to fetch customer data.",
     };
   }
 }

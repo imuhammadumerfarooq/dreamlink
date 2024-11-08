@@ -12,15 +12,28 @@ const KeysSchema = z.object({
   }),
 });
 
+const countrySchema = z.object({
+  country: z.string().optional(),
+});
+
 const userSchema = z
   .object({
     firstName: z.string().optional(),
     lastName: z.string().optional(),
     email: z.string().optional(),
     phoneNumber: z.string().optional(),
-    country: z.string().optional(),
     isGuest: z.boolean(),
   })
   .partial();
 
-export const formSchema = KeysSchema.merge(userSchema);
+const addressSchema = z
+  .object({
+    street: z.string().optional(),
+    city: z.string().optional(),
+  })
+  .optional();
+
+export const formSchema = z.intersection(
+  KeysSchema,
+  z.intersection(countrySchema, z.intersection(userSchema, addressSchema))
+);

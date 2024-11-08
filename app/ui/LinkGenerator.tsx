@@ -40,7 +40,9 @@ export default function LinkGenerator() {
     initialState
   );
 
-  const [isVisible, setIsVisible] = useState(false);
+  const [isCustomerVisible, setIsCustomerVisible] = useState(false);
+
+  const [isAddressVisible, setIsAddressVisible] = useState(false);
 
   useEffect(() => {
     console.log(state);
@@ -52,17 +54,23 @@ export default function LinkGenerator() {
       secretKey: "",
       publicKey: "",
       environment: "development",
+      country: "",
       firstName: "",
       lastName: "",
       email: "",
       phoneNumber: "",
-      country: "",
       isGuest: false,
+      street: "",
+      city: "",
     },
   });
 
-  const handleCheckboxChange = () => {
-    setIsVisible(!isVisible);
+  const handleCustomerChange = () => {
+    setIsCustomerVisible(!isCustomerVisible);
+  };
+
+  const handleAddresssChange = () => {
+    setIsAddressVisible(!isAddressVisible);
   };
 
   return (
@@ -169,15 +177,15 @@ export default function LinkGenerator() {
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="customer"
-                  defaultChecked={isVisible}
-                  onCheckedChange={handleCheckboxChange}
+                  defaultChecked={isCustomerVisible}
+                  onCheckedChange={handleCustomerChange}
                 />
                 <label htmlFor="customer" className="text-sm font-medium py-2">
-                  Create a Customer Token
+                  Create a customer
                 </label>
               </div>
 
-              {isVisible && (
+              {isCustomerVisible && (
                 <>
                   <div className="h-500px space-y-4 w-full">
                     <div className="flex w-[375px] gap-4">
@@ -250,8 +258,6 @@ export default function LinkGenerator() {
                                 checked={field.value}
                                 onCheckedChange={(checked) => {
                                   field.onChange(checked);
-
-                                  console.log(checked);
                                 }}
                               />
                               <label
@@ -261,6 +267,61 @@ export default function LinkGenerator() {
                                 Guest
                               </label>
                             </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="flex flex-col items-starts">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="address"
+                  defaultChecked={isAddressVisible}
+                  onCheckedChange={handleAddresssChange}
+                />
+                <label htmlFor="address" className="text-sm font-medium py-2">
+                  Create an address
+                </label>
+              </div>
+
+              {isAddressVisible && (
+                <>
+                  <div className="space-y-4 w-full">
+                    <FormField
+                      control={form.control}
+                      name="street"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Street" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="City" {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="country"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Country" {...field} />
                           </FormControl>
                         </FormItem>
                       )}
