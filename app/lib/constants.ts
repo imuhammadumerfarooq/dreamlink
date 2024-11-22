@@ -3,5 +3,3 @@ export const Host = {
   sandbox: "https://sandbox.api.getsafepay.com",
   production: "https://getsafepay.com",
 };
-
-export const countryCode = ["PK", "USA", "CA"];

@@ -6,12 +6,14 @@ export async function createAddressToken({
   street,
   city,
   country,
+  state,
 }: {
   secretKey: string;
   host: string;
   street?: string;
   city?: string;
   country?: string;
+  state?: string;
 }) {
   const safepay = new Safepay(secretKey, {
     authType: "secret",
