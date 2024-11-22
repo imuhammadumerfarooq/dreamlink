@@ -8,7 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Drawer,
   DrawerClose,
@@ -32,7 +39,7 @@ import { createURL } from "../lib/actions/formActions";
 import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const initialState = { message: "" };
+const initialState = "";
 
 export default function LinkGenerator() {
   const [state, formAction, isPending] = useActionState(
@@ -73,6 +80,8 @@ export default function LinkGenerator() {
     setIsAddressVisible(!isAddressVisible);
   };
 
+  function onSubmit(values: z.infer<typeof formSchema>) {}
+
   return (
     <Form {...form}>
       <Card>
@@ -93,7 +102,11 @@ export default function LinkGenerator() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={formAction} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            action={formAction}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="secretKey"
@@ -102,6 +115,7 @@ export default function LinkGenerator() {
                   <FormControl>
                     <Input placeholder="Secret Key" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -114,6 +128,7 @@ export default function LinkGenerator() {
                   <FormControl>
                     <Input placeholder="Public Key" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -197,6 +212,7 @@ export default function LinkGenerator() {
                             <FormControl>
                               <Input placeholder="First Name" {...field} />
                             </FormControl>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -276,7 +292,7 @@ export default function LinkGenerator() {
               )}
             </div>
 
-            <div className="flex flex-col items-starts">
+            {/* <div className="flex flex-col items-starts">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="address"
@@ -329,7 +345,7 @@ export default function LinkGenerator() {
                   </div>
                 </>
               )}
-            </div>
+            </div> */}
 
             <Button variant="submit" disabled={isPending} type="submit">
               {isPending ? (
