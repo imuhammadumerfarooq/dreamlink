@@ -58,8 +58,8 @@ export default function DreamLink() {
       isAddressVisible: false,
       addressCountry: "",
       state: "",
-      street: "",
       city: "",
+      street: "",
       postalCode: "",
     },
   });

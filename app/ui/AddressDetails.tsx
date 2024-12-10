@@ -139,43 +139,65 @@ const AddressDetails = ({ form, state }: addressDetailProps) => {
                 )}
               />
 
-              {response?.required.map((fieldType, index) => (
-                <div
-                  key={index}
-                  className=" space-y-4 w-full motion-preset-slide-down motion-duration-2000"
-                >
-                  <FormField
-                    control={form.control}
-                    name="state"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            placeholder={response[fieldType].name}
-                            {...field}
-                            aria-describedby="addressState-error"
-                          />
-                        </FormControl>
-                        <FormMessage
-                          id="addressState-error"
-                          aria-live="polite"
-                          aria-atomic="true"
-                        >
-                          {state?.errors?.addressState &&
-                            state?.errors?.addressState.map((error: string) => (
-                              <Label
-                                className="mt-2 text-sm text-red-500"
-                                key={error}
-                              >
-                                {error}
-                              </Label>
-                            ))}
-                        </FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              ))}
+              {response?.required.map((fieldType, index) => {
+                const fieldNameMap: Record<
+                  FieldType,
+                  keyof z.infer<typeof formSchema>
+                > = {
+                  AdministrativeArea: "state",
+                  Locality: "city",
+                  StreetAddress: "street",
+                  PostCode: "postalCode",
+                };
+
+                // Get the corresponding form field name
+                const fieldName = fieldNameMap[fieldType];
+
+                return (
+                  <div
+                    key={index}
+                    className=" space-y-4 w-full motion-preset-slide-down motion-duration-2000"
+                  >
+                    <FormField
+                      control={form.control}
+                      name={fieldName}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              placeholder={response[fieldType].name}
+                              {...field}
+                              value={
+                                typeof field.value === "string"
+                                  ? field.value
+                                  : ""
+                              }
+                              aria-describedby={`${fieldName}-error`}
+                            />
+                          </FormControl>
+                          <FormMessage
+                            id={`${fieldName}-error`}
+                            aria-live="polite"
+                            aria-atomic="true"
+                          >
+                            {state?.errors?.[fieldName] &&
+                              state?.errors?.[fieldName].map(
+                                (error: string) => (
+                                  <Label
+                                    className="mt-2 text-sm text-red-500"
+                                    key={error}
+                                  >
+                                    {error}
+                                  </Label>
+                                )
+                              )}
+                          </FormMessage>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </>
         )}
