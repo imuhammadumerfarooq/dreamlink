@@ -12,6 +12,7 @@ export async function createURL(
   prevState: State | undefined,
   formData: FormData
 ) {
+  console.log();
   let tbt: string = "";
   let tracker: string = "";
   let env: string = "";
@@ -22,20 +23,22 @@ export async function createURL(
   const validatedFields = formSchema.safeParse({
     secretKey: formData.get("secretKey"),
     publicKey: formData.get("publicKey"),
+    mode: formData.get("mode"),
+    amount: parseFloat(formData.get("amount") as string) || undefined,
     environment: formData.get("environment"),
     firstName: formData.get("firstName") ?? "",
     lastName: formData.get("lastName") ?? "",
     email: formData.get("email") ?? "",
     phoneNumber: formData.get("phoneNumber") ?? "",
     customerCountry: formData.get("customerCountry") ?? "",
-    customerState: formData.get("customerState") ?? "",
     isGuest: formData.get("isGuest") === "on",
-    street: formData.get("street") ?? "",
-    city: formData.get("city") ?? "",
     addressCountry: formData.get("addressCountry") ?? "",
-    addressState: formData.get("addressState") ?? "",
+    state: formData.get("state") ?? "",
+    city: formData.get("city") ?? "",
+    street: formData.get("street") ?? "",
+    postalCode: formData.get("postalCode") ?? "",
   });
-  console.log(validatedFields);
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -43,24 +46,26 @@ export async function createURL(
     };
   }
 
-  console.log(validatedFields);
-
   const {
     secretKey,
     publicKey,
+    mode,
+    amount,
     environment,
     firstName,
     lastName,
     email,
     phoneNumber,
     customerCountry,
-    customerState,
     isGuest,
-    street,
-    city,
     addressCountry,
-    addressState,
+    state,
+    city,
+    street,
+    postalCode,
   } = validatedFields.data;
+
+  console.log(validatedFields);
 
   try {
     const TBT = await createTBT({
@@ -73,6 +78,8 @@ export async function createURL(
 
     const Tracker = await createTracker({
       publicKey: publicKey,
+      mode: mode,
+      payment: amount,
       host: Host[environment],
     });
 
@@ -87,20 +94,21 @@ export async function createURL(
         email: email,
         phoneNumber: phoneNumber,
         country: customerCountry,
-        state: customerState,
         isGuest: isGuest ?? false,
       });
+
       customer = customerToken ? `&user_id=${customerToken}` : "";
     }
 
-    if (street || city || addressCountry) {
+    if (addressCountry) {
       const addressToken = await createAddressToken({
         secretKey: secretKey,
         host: Host[environment],
-        street: street,
-        city: city,
         country: addressCountry,
-        state: addressState,
+        state: state,
+        city: city,
+        street: street,
+        postalCode: postalCode,
       });
       address = addressToken ? `&address=${addressToken}` : "";
     }

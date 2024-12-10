@@ -46,6 +46,7 @@ export default function DreamLink() {
     defaultValues: {
       secretKey: "",
       publicKey: "",
+      mode: "payment",
       environment: "development",
       isCustomerVisible: false,
       firstName: "",
@@ -53,13 +54,13 @@ export default function DreamLink() {
       email: "",
       phoneNumber: "",
       customerCountry: "",
-      customerState: "",
       isGuest: false,
       isAddressVisible: false,
+      addressCountry: "",
+      state: "",
       street: "",
       city: "",
-      addressCountry: "",
-      addressState: "",
+      postalCode: "",
     },
   });
 
@@ -71,7 +72,7 @@ export default function DreamLink() {
             <Image
               className="dark:invert"
               src="/assets/logo.svg"
-              alt="Next.js logo"
+              alt="safepay-logo"
               width={100}
               height={20}
               priority
@@ -79,7 +80,7 @@ export default function DreamLink() {
             />
           </CardTitle>
           <CardDescription>
-            Create a safepay checkout link by adding the credentials.
+            Create a safepay dream link by adding the credentials.
           </CardDescription>
         </CardHeader>
 

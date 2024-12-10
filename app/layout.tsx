@@ -16,7 +16,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: {
     template: "%s | Safepay",
-    default: "Safepay",
+    default: "DreamLink | Safepay",
   },
   description: "Online payments built for Pakistan",
 };

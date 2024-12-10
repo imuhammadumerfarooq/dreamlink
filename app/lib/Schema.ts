@@ -1,16 +1,33 @@
 import { z } from "zod";
 
-const KeysSchema = z.object({
-  secretKey: z
-    .string({ required_error: "Secret Key is required." })
-    .min(64, { message: "Secret Key should be at least 64 characters." }),
-  publicKey: z
-    .string({ required_error: "Public Key is required." })
-    .min(40, { message: "Public Key should be at least 40 characters." }),
-  environment: z.enum(["development", "sandbox", "production"], {
-    invalid_type_error: "Please select a host.",
-  }),
-});
+const KeysSchema = z
+  .object({
+    secretKey: z
+      .string({ required_error: "Secret Key is required." })
+      .min(64, { message: "Secret Key should be at least 64 characters." }),
+    publicKey: z
+      .string({ required_error: "Public Key is required." })
+      .min(40, { message: "Public Key should be at least 40 characters." }),
+    mode: z.enum(["payment", "instrument"], {
+      invalid_type_error: "Please select a mode.",
+    }),
+    amount: z.number().optional(),
+    environment: z.enum(["development", "sandbox", "production"], {
+      invalid_type_error: "Please select a host.",
+    }),
+  })
+  .refine(
+    (data) => {
+      if (data.mode === "payment") {
+        return !!data.amount;
+      }
+      return true;
+    },
+    {
+      message: "Payment is required.",
+      path: ["payment"],
+    }
+  );
 
 const userSchema = z
   .object({
@@ -20,17 +37,7 @@ const userSchema = z
     email: z.string(),
     phoneNumber: z.string(),
     customerCountry: z.string(),
-    customerState: z.string().optional(),
     isGuest: z.boolean(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.isCustomerVisible && !data.firstName) {
-      ctx.addIssue({
-        path: ["firstName"],
-        message: "First name is required when the customer is visible.",
-        code: z.ZodIssueCode.custom,
-      });
-    }
   })
   .refine(
     (data) => {
@@ -90,18 +97,6 @@ const userSchema = z
   )
   .refine(
     (data) => {
-      if (data.customerCountry === "USA" || data.customerCountry === "CA") {
-        return !!data.customerState;
-      }
-      return true;
-    },
-    {
-      message: "Select a state.",
-      path: ["state"],
-    }
-  )
-  .refine(
-    (data) => {
       if (data.isCustomerVisible === true) {
         return !!data;
       }
@@ -115,35 +110,12 @@ const userSchema = z
 const addressSchema = z
   .object({
     isAddressVisible: z.boolean().default(false),
-    street: z.string(),
-    city: z.string(),
     addressCountry: z.string(),
-    addressState: z.string().optional(),
+    state: z.string().optional(),
+    city: z.string().optional(),
+    street: z.string().optional(),
+    postalCode: z.string().optional(),
   })
-  .refine(
-    (data) => {
-      if (data.isAddressVisible === true) {
-        return !!data.street;
-      }
-      return true;
-    },
-    {
-      message: "Street address.",
-      path: ["street"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.isAddressVisible === true) {
-        return !!data.city;
-      }
-      return true;
-    },
-    {
-      message: "Select a city.",
-      path: ["city"],
-    }
-  )
   .refine(
     (data) => {
       if (data.isAddressVisible === true) {
@@ -154,18 +126,6 @@ const addressSchema = z
     {
       message: "Select a country.",
       path: ["addressCountry"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.addressCountry === "USA" || data.addressCountry === "CA") {
-        return !!data.addressState;
-      }
-      return true;
-    },
-    {
-      message: "Select a state.",
-      path: ["state"],
     }
   );
 

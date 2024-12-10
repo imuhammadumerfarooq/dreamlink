@@ -1,3 +1,5 @@
+"use Client";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -5,11 +7,21 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { formSchema } from "../lib/Schema";
 import { UseFormReturn } from "react-hook-form";
 import { Label } from "@/components/ui/label";
+import { countriesData } from "../lib/constants";
+import fetchCountry from "../api/CountryRoute";
+import { useEffect, useState } from "react";
 
 interface customerDetailProps {
   form: UseFormReturn<z.infer<typeof formSchema>>;
@@ -18,7 +30,7 @@ interface customerDetailProps {
 
 const CustomerDetails = ({ form, state }: customerDetailProps) => {
   const isCustomerVisible = form.watch("isCustomerVisible");
-  const customerCountry = form.watch("customerCountry");
+
   return (
     <>
       <div className="flex flex-col items-starts">
@@ -52,7 +64,7 @@ const CustomerDetails = ({ form, state }: customerDetailProps) => {
 
         {isCustomerVisible && (
           <>
-            <div className="h-500px space-y-4 w-full">
+            <div className="h-500px space-y-4 w-full !scroll-smooth motion-preset-slide-down-sm motion-duration-2000">
               <div className="flex w-[375px] gap-4">
                 <FormField
                   control={form.control}
@@ -185,6 +197,55 @@ const CustomerDetails = ({ form, state }: customerDetailProps) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                        }}
+                        {...field}
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder="Select a country"
+                            aria-describedby="customerCountry-error"
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countriesData.map((country) => (
+                            <SelectItem
+                              key={country.code}
+                              value={country.code.toString()}
+                            >
+                              {country.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage
+                      id="customerCountry-error"
+                      aria-live="polite"
+                      aria-atomic="true"
+                    >
+                      {state?.errors?.customerCountry &&
+                        state?.errors?.customerCountry.map((error: string) => (
+                          <Label
+                            className="mt-2 text-sm text-red-500"
+                            key={error}
+                          >
+                            {error}
+                          </Label>
+                        ))}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+
+              {/* <FormField
+                control={form.control}
+                name="customerCountry"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
                       <Input
                         placeholder="Country"
                         {...field}
@@ -208,40 +269,7 @@ const CustomerDetails = ({ form, state }: customerDetailProps) => {
                     </FormMessage>
                   </FormItem>
                 )}
-              />
-
-              {(customerCountry === "USA" || customerCountry === "CA") && (
-                <FormField
-                  control={form.control}
-                  name="customerState"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="State"
-                          {...field}
-                          aria-describedby="customerState-error"
-                        />
-                      </FormControl>
-                      <FormMessage
-                        id="customerState-error"
-                        aria-live="polite"
-                        aria-atomic="true"
-                      >
-                        {state?.errors?.customerState &&
-                          state?.errors?.customerState.map((error: string) => (
-                            <Label
-                              className="mt-2 text-sm text-red-500"
-                              key={error}
-                            >
-                              {error}
-                            </Label>
-                          ))}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-              )}
+              /> */}
 
               <FormField
                 control={form.control}

@@ -8,7 +8,6 @@ export async function createCustomerToken({
   email,
   phoneNumber,
   country,
-  state,
   isGuest,
 }: {
   secretKey: string;
@@ -18,7 +17,6 @@ export async function createCustomerToken({
   email?: string;
   phoneNumber?: string;
   country?: string;
-  state?: string;
   isGuest: boolean;
 }) {
   const safepay = new Safepay(secretKey, {

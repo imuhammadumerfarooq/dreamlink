@@ -1,3 +1,4 @@
+"use client";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   FormControl,
@@ -5,21 +6,52 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { formSchema } from "../lib/Schema";
 import { UseFormReturn } from "react-hook-form";
 import { Label } from "@/components/ui/label";
+import { countriesData } from "../lib/constants";
+import fetchCountry from "../api/CountryRoute";
 
 interface addressDetailProps {
   form: UseFormReturn<z.infer<typeof formSchema>>;
   state: any;
 }
 
+type FieldType =
+  | "AdministrativeArea"
+  | "Locality"
+  | "PostCode"
+  | "StreetAddress";
+
+type RequiredFieldsArray = FieldType[];
+
+interface responseType {
+  required: RequiredFieldsArray;
+  Locality: { name: string };
+  AdministrativeArea: { name: string };
+  PostCode: { name: string };
+  StreetAddress: { name: string };
+}
+
 const AddressDetails = ({ form, state }: addressDetailProps) => {
   const isAddressVisible = form.watch("isAddressVisible");
-  const addressCountry = form.watch("addressCountry");
+
+  const [response, setResponse] = useState<responseType | undefined>(undefined);
+
+  useEffect(() => {
+    // console.log(response, "response");
+  }, [response]);
+
   return (
     <>
       <div className="flex flex-col items-starts">
@@ -52,135 +84,98 @@ const AddressDetails = ({ form, state }: addressDetailProps) => {
 
         {isAddressVisible && (
           <>
-            <div className="space-y-4 w-full">
-              <FormField
-                control={form.control}
-                name="street"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="Street"
-                        {...field}
-                        aria-describedby="street-error"
-                      />
-                    </FormControl>
-                    <FormMessage
-                      id="street-error"
-                      aria-live="polite"
-                      aria-atomic="true"
-                    >
-                      {state?.errors?.street &&
-                        state?.errors?.street.map((error: string) => (
-                          <Label
-                            className="mt-2 text-sm text-red-500"
-                            key={error}
-                          >
-                            {error}
-                          </Label>
-                        ))}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder="City"
-                        {...field}
-                        aria-describedby="city-error"
-                      />
-                    </FormControl>
-                    <FormMessage
-                      id="city-error"
-                      aria-live="polite"
-                      aria-atomic="true"
-                    >
-                      {state?.errors?.city &&
-                        state?.errors?.city.map((error: string) => (
-                          <Label
-                            className="mt-2 text-sm text-red-500"
-                            key={error}
-                          >
-                            {error}
-                          </Label>
-                        ))}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-
+            <div className="space-y-4 w-full motion-preset-slide-down motion-duration-2000">
               <FormField
                 control={form.control}
                 name="addressCountry"
                 render={({ field }) => (
                   <FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="Country"
-                          {...field}
-                          aria-describedby="addressCountry-error"
-                        />
-                      </FormControl>
-                      <FormMessage
-                        id="addressCountry-error"
-                        aria-live="polite"
-                        aria-atomic="true"
+                    <FormControl>
+                      <Select
+                        onValueChange={async (value) => {
+                          field.onChange(value);
+                          console.log(value);
+                          let { data: fields } = await fetchCountry({
+                            country: value,
+                          });
+                          setResponse(fields);
+                        }}
+                        {...field}
                       >
-                        {state?.errors?.addressCountry &&
-                          state?.errors?.addressCountry.map((error: string) => (
-                            <Label
-                              className="mt-2 text-sm text-red-500"
-                              key={error}
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder="Select a country"
+                            aria-describedby="addressCountry-error"
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countriesData.map((country) => (
+                            <SelectItem
+                              key={country.code}
+                              value={country.code.toString()}
                             >
-                              {error}
-                            </Label>
+                              {country.name}
+                            </SelectItem>
                           ))}
-                      </FormMessage>
-                    </FormItem>
-
-                    <FormMessage />
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage
+                      id="addressCountry-error"
+                      aria-live="polite"
+                      aria-atomic="true"
+                    >
+                      {state?.errors?.addressCountry &&
+                        state?.errors?.addressCountry.map((error: string) => (
+                          <Label
+                            className="mt-2 text-sm text-red-500"
+                            key={error}
+                          >
+                            {error}
+                          </Label>
+                        ))}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
-              {(addressCountry === "USA" || addressCountry === "CA") && (
-                <FormField
-                  control={form.control}
-                  name="addressState"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          placeholder="State"
-                          {...field}
-                          aria-describedby="addressState-error"
-                        />
-                      </FormControl>
-                      <FormMessage
-                        id="addressState-error"
-                        aria-live="polite"
-                        aria-atomic="true"
-                      >
-                        {state?.errors?.addressState &&
-                          state?.errors?.addressState.map((error: string) => (
-                            <Label
-                              className="mt-2 text-sm text-red-500"
-                              key={error}
-                            >
-                              {error}
-                            </Label>
-                          ))}
-                      </FormMessage>
-                    </FormItem>
-                  )}
-                />
-              )}
+
+              {response?.required.map((fieldType, index) => (
+                <div
+                  key={index}
+                  className=" space-y-4 w-full motion-preset-slide-down motion-duration-2000"
+                >
+                  <FormField
+                    control={form.control}
+                    name="state"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder={response[fieldType].name}
+                            {...field}
+                            aria-describedby="addressState-error"
+                          />
+                        </FormControl>
+                        <FormMessage
+                          id="addressState-error"
+                          aria-live="polite"
+                          aria-atomic="true"
+                        >
+                          {state?.errors?.addressState &&
+                            state?.errors?.addressState.map((error: string) => (
+                              <Label
+                                className="mt-2 text-sm text-red-500"
+                                key={error}
+                              >
+                                {error}
+                              </Label>
+                            ))}
+                        </FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ))}
             </div>
           </>
         )}

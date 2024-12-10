@@ -5,9 +5,9 @@ export const metadata: Metadata = {
   title: "Home",
 };
 
-export default function Home() {
+export default async function Home() {
   return (
-    <main className="flex justify-center pt-14 ">
+    <main className="flex justify-center py-14 ">
       <DreamLink />
     </main>
   );

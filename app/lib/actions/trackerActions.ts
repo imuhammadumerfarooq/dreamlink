@@ -2,9 +2,13 @@ import Safepay from "@sfpy/node-core";
 
 export async function createTracker({
   publicKey,
+  mode,
+  payment,
   host,
 }: {
   publicKey: string;
+  mode: string;
+  payment?: number;
   host: string;
 }) {
   const safepay = new Safepay("", {
@@ -16,9 +20,9 @@ export async function createTracker({
     const { data } = await safepay.payments.session.setup({
       merchant_api_key: publicKey,
       intent: "CYBERSOURCE",
-      mode: "payment",
+      mode: mode,
       currency: "PKR",
-      amount: 1000,
+      amount: payment,
     });
 
     return data.tracker.token;

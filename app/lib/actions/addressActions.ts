@@ -3,17 +3,19 @@ import Safepay from "@sfpy/node-core";
 export async function createAddressToken({
   secretKey,
   host,
-  street,
-  city,
   country,
   state,
+  city,
+  street,
+  postalCode,
 }: {
   secretKey: string;
   host: string;
-  street?: string;
-  city?: string;
   country?: string;
   state?: string;
+  city?: string;
+  street?: string;
+  postalCode?: string;
 }) {
   const safepay = new Safepay(secretKey, {
     authType: "secret",
@@ -22,9 +24,11 @@ export async function createAddressToken({
 
   try {
     const { data } = await safepay.customers.addresses.create({
-      street1: street,
-      city: city,
       country: country,
+      state: state,
+      city: city,
+      street1: street,
+      postal_code: postalCode,
     });
 
     return data.token;
