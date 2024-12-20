@@ -1,18 +1,17 @@
 "use server";
 
-import { State } from "../definitions";
 import { formSchema } from "../Schema";
 import { Host } from "../../lib/constants";
 import { createTBT } from "./tbtActions";
 import { createTracker } from "./trackerActions";
 import { createCustomerToken } from "./customerActions";
 import { createAddressToken } from "./addressActions";
+import { State } from "../definitions";
 
 export async function createURL(
   prevState: State | undefined,
   formData: FormData
-) {
-  console.log();
+): Promise<State> {
   let tbt: string = "";
   let tracker: string = "";
   let env: string = "";
@@ -39,12 +38,16 @@ export async function createURL(
     postalCode: formData.get("postalCode") ?? "",
   });
 
+  console.log(validatedFields);
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to Create checkout.",
     };
   }
+
+  console.log(validatedFields);
 
   const {
     secretKey,
@@ -115,10 +118,15 @@ export async function createURL(
 
     const url = `${Host[environment]}${embedded}${env}${tbt}${tracker}${customer}${address}`;
 
-    console.log({ url });
+    return {
+      message: "Checkout link created successfully.",
+      errors: {},
+      url,
+    };
   } catch (error) {
     return {
       message: "API Error: Failed to fetch form data.",
+      errors: {},
     };
   }
 }

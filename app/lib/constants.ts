@@ -15,13 +15,6 @@ export const paymentModes = [
   { id: "instrument", label: "instrument" },
 ];
 
-// interface Country {
-//   code: string;
-//   name: string;
-// }
-
-// export type CountryCodes = Country["code"];
-
 export const countriesData = [
   {
     code: "AF",

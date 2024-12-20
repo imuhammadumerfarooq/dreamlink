@@ -1,13 +1,13 @@
 import { Metadata } from "next";
-import DreamLink from "./ui/DreamLink";
+import DreamLink from "@/app/ui/DreamLink";
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: "Dreamlink",
 };
 
 export default async function Home() {
   return (
-    <main className="flex justify-center py-14 ">
+    <main className="flex justify-center py-14">
       <DreamLink />
     </main>
   );

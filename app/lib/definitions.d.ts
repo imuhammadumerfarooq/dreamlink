@@ -14,28 +14,59 @@ export type State = {
     street?: string[];
     city?: string[];
     postalCode?: string[];
-  };
+  } & Record<string, string[]>;
   message?: string | null;
+  url?: string | null;
 };
 
-type AddressData = {
-  administrativeArea: Field;
-  locality: Name;
-  streetAddress: Name;
-  postCode: Name;
-  required: string[];
-};
+export type FieldType =
+  | "AdministrativeArea"
+  | "Locality"
+  | "PostCode"
+  | "StreetAddress";
 
-type Field = {
+type RequiredFieldsArray = FieldType[];
+
+interface responseType {
+  required: RequiredFieldsArray;
+  Locality: { name: string };
+  AdministrativeArea: { name: string };
+  PostCode: { name: string };
+  StreetAddress: { name: string };
+}
+
+interface CheckboxFieldProps {
+  control: any;
   name: string;
-  options?: Option[];
-};
-
-type Option = {
   id: string;
-  name: string;
-};
+  label: string;
+}
 
-type Name = {
+interface InputFieldProps {
+  control: any;
   name: string;
-};
+  type?: "text" | "number";
+  placeholder: string;
+  ariaDescribedById: string;
+  errors?: Record<string, string[]>;
+}
+
+interface CountryFieldProps {
+  control: any;
+  name: string;
+  ariaDescribedById: string;
+  placeholder: string;
+  countriesData: { code: string; name: string }[];
+  errors?: Record<string, string[]>;
+  onValueChange?: (value: string) => void | Promise<void>;
+}
+
+interface RadioFieldProps {
+  control: any;
+  name: string;
+  label: string;
+  ariaDescribedById: string;
+  options: { id: string; label: string }[];
+  errors?: Record<string, string[]>;
+  onValueChange?: (value: string) => void | Promise<void>;
+}

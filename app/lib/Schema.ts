@@ -9,36 +9,32 @@ const KeysSchema = z
       .string({ required_error: "Public Key is required." })
       .min(40, { message: "Public Key should be at least 40 characters." }),
     mode: z.enum(["payment", "instrument"], {
-      invalid_type_error: "Please select a mode.",
+      invalid_type_error: "Please select payment mode.",
     }),
     amount: z.number().optional(),
     environment: z.enum(["development", "sandbox", "production"], {
       invalid_type_error: "Please select a host.",
     }),
+    isCustomerVisible: z.boolean().default(false),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    email: z.string().optional(),
+    phoneNumber: z.string().optional(),
+    customerCountry: z.string().optional(),
+    isGuest: z.boolean(),
   })
   .refine(
     (data) => {
       if (data.mode === "payment") {
-        return !!data.amount;
+        return data.amount;
       }
       return true;
     },
     {
-      message: "Payment is required.",
+      message: "Please enter amount greater than 0.",
       path: ["payment"],
     }
-  );
-
-const userSchema = z
-  .object({
-    isCustomerVisible: z.boolean().default(false),
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string(),
-    phoneNumber: z.string(),
-    customerCountry: z.string(),
-    isGuest: z.boolean(),
-  })
+  )
   .refine(
     (data) => {
       if (data.isCustomerVisible === true) {
@@ -129,7 +125,20 @@ const addressSchema = z
     }
   );
 
-export const formSchema = z.intersection(
-  KeysSchema,
-  z.intersection(userSchema, addressSchema)
+export const formSchema = z.intersection(KeysSchema, addressSchema).refine(
+  (data) => {
+    if (data.mode === "instrument") {
+      return (
+        !!data.firstName &&
+        !!data.lastName &&
+        !!data.email &&
+        !!data.phoneNumber &&
+        !!data.customerCountry
+      );
+    }
+    return true;
+  },
+  {
+    message: "Customer details are required when mode is 'instrument'.",
+  }
 );

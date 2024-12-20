@@ -8,38 +8,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import Image from "next/image";
-import Link from "next/link";
 import { z } from "zod";
 import { Form } from "@/components/ui/form";
 import { formSchema } from "../lib/Schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { useActionState } from "react";
-import { Loader2 } from "lucide-react";
-import { State } from "../lib/definitions";
+import { useActionState, useEffect, useState } from "react";
 import { createURL } from "../lib/actions/formActions";
+import { State } from "../lib/definitions";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import KeyDetails from "./KeyDetails";
 import CustomerDetails from "./CustomerDetails";
 import AddressDetails from "./AddressDetails";
+import DynamicURL from "./DynamicURL";
+import { useToast } from "@/hooks/use-toast";
 
 export default function DreamLink() {
-  const initialState: State = { message: null, errors: {} };
+  const initialState: State = { message: null, errors: {}, url: "" };
   const [state, formAction, isPending] = useActionState(
     createURL,
     initialState
   );
+
+  const { toast } = useToast();
+  const [message, setMessage] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,7 +41,7 @@ export default function DreamLink() {
       secretKey: "",
       publicKey: "",
       mode: "payment",
-      environment: "development",
+      // environment: "development",
       isCustomerVisible: false,
       firstName: "",
       lastName: "",
@@ -64,83 +58,70 @@ export default function DreamLink() {
     },
   });
 
+  useEffect(() => {
+    if (state?.message) {
+      toast({
+        description: state.message,
+        variant:
+          state.errors?.length || state.message.includes("Failed")
+            ? "destructive"
+            : "success",
+        duration: 3000,
+      });
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+    }
+  }, [state?.message, state.errors, toast]);
+
+  useEffect(() => {
+    setMessage(null);
+  }, []);
+
   return (
-    <Form {...form}>
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            <Image
-              className="dark:invert"
-              src="/assets/logo.svg"
-              alt="safepay-logo"
-              width={100}
-              height={20}
-              priority
-              style={{ width: "auto", height: "auto" }}
-            />
-          </CardTitle>
-          <CardDescription>
-            Create a safepay dream link by adding the credentials.
-          </CardDescription>
-        </CardHeader>
+    <>
+      <Form {...form}>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <Image
+                className="dark:invert"
+                src="/assets/logo.svg"
+                alt="safepay-logo"
+                width={100}
+                height={20}
+                priority
+                style={{ width: "auto", height: "auto" }}
+              />
+            </CardTitle>
+            <CardDescription>
+              Create a safepay dream link by adding the credentials.
+            </CardDescription>
+          </CardHeader>
 
-        <CardContent>
-          <form action={formAction} className="space-y-4">
-            <KeyDetails form={form} state={state} />
+          <CardContent>
+            <form action={formAction} className="space-y-4">
+              <KeyDetails form={form} state={state} />
 
-            <CustomerDetails form={form} state={state} />
+              <CustomerDetails form={form} state={state} />
 
-            <AddressDetails form={form} state={state} />
+              <AddressDetails form={form} state={state} />
 
-            <p className="mt-2 text-sm text-red-500">{state?.message}</p>
+              <Button variant="submit" disabled={isPending} type="submit">
+                {isPending ? (
+                  <Loader2 className="flex justify-center mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Submit"
+                )}
+              </Button>
+            </form>
+          </CardContent>
 
-            <Button variant="submit" disabled={isPending} type="submit">
-              {isPending ? (
-                <Loader2 className="flex justify-center mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Submit"
-              )}
-            </Button>
-          </form>
-        </CardContent>
-
-        <CardFooter className="flex items-center justify-center">
-          {state && (
-            <div className="w-full flex justify-between">
-              <Link
-                href={"/"}
-                target="_blank"
-                className="w-full flex justify-center items-center"
-              >
-                Go to link
-              </Link>
-              <div className=" flex justify-center w-full text-white bg-[#193A8C] rounded-md h-9">
-                <Drawer>
-                  <DrawerTrigger>Open here</DrawerTrigger>
-                  <DrawerContent className="h-[600px] ">
-                    <DrawerHeader className="flex flex-col items-center">
-                      <DrawerTitle>Checkout</DrawerTitle>
-                      <DrawerDescription>Safepay Checkout</DrawerDescription>
-                    </DrawerHeader>
-                    <iframe
-                      src={state.toString()}
-                      aria-describedby={undefined}
-                      className="h-full"
-                    ></iframe>
-                    <DrawerFooter>
-                      <DrawerClose>
-                        <div className="border border-gray-200 hover:bg-gray-100 inline-block px-5 py-1 rounded-md">
-                          Close
-                        </div>
-                      </DrawerClose>
-                    </DrawerFooter>
-                  </DrawerContent>
-                </Drawer>
-              </div>
-            </div>
-          )}
-        </CardFooter>
-      </Card>
-    </Form>
+          <CardFooter className="flex items-center justify-center">
+            {state.url && <DynamicURL url={state.url} />}
+          </CardFooter>
+        </Card>
+      </Form>
+    </>
   );
 }
