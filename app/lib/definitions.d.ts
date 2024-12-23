@@ -19,6 +19,13 @@ export type State = {
   url?: string | null;
 };
 
+interface FormDetailProps {
+  form: UseFormReturn<z.infer<typeof formSchema>>;
+  state: any;
+}
+
+export type Mode = "payment" | "instrument";
+
 export type FieldType =
   | "AdministrativeArea"
   | "Locality"

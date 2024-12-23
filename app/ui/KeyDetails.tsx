@@ -1,20 +1,22 @@
-"use client";
-
-import { useState } from "react";
-import { z } from "zod";
-import { formSchema } from "../lib/Schema";
-import { UseFormReturn } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { environments, paymentModes } from "../lib/constants";
 import CustomFormField from "./CustomInputField";
 import CustomRadioField from "./CustomRadioField";
+import { FormDetailProps, Mode } from "../lib/definitions";
 
-interface KeyDetailProps {
-  form: UseFormReturn<z.infer<typeof formSchema>>;
-  state: any;
-}
+const KeyDetails = ({ form, state }: FormDetailProps) => {
+  const [selectedMode, setSelectedMode] = useState<Mode>(
+    form.getValues("mode") as Mode
+  );
 
-const KeyDetails = ({ form, state }: KeyDetailProps) => {
-  const [selectedMode, setSelectedMode] = useState("");
+  useEffect(() => {
+    const subscription = form.watch((value: any) => {
+      if (value.mode) {
+        setSelectedMode(value.mode);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   return (
     <>
@@ -50,7 +52,7 @@ const KeyDetails = ({ form, state }: KeyDetailProps) => {
         options={paymentModes}
         errors={state?.errors}
         ariaDescribedById="mode-error"
-        onValueChange={(value) => setSelectedMode(value)}
+        onValueChange={(value) => setSelectedMode(value as Mode)}
       />
 
       {selectedMode === "payment" && (

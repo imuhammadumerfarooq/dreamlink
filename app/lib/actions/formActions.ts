@@ -38,16 +38,12 @@ export async function createURL(
     postalCode: formData.get("postalCode") ?? "",
   });
 
-  console.log(validatedFields);
-
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to Create checkout.",
     };
   }
-
-  console.log(validatedFields);
 
   const {
     secretKey,

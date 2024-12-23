@@ -41,7 +41,7 @@ export default function DreamLink() {
       secretKey: "",
       publicKey: "",
       mode: "payment",
-      // environment: "development",
+      environment: "development",
       isCustomerVisible: false,
       firstName: "",
       lastName: "",
@@ -117,9 +117,11 @@ export default function DreamLink() {
             </form>
           </CardContent>
 
-          <CardFooter className="flex items-center justify-center">
-            {state.url && <DynamicURL url={state.url} />}
-          </CardFooter>
+          {state.url && !Object.keys(state.errors || {}).length && (
+            <CardFooter className="flex items-center justify-center">
+              <DynamicURL url={state.url} />
+            </CardFooter>
+          )}
         </Card>
       </Form>
     </>

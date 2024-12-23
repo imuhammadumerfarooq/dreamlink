@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   FormControl,
   FormField,
@@ -18,19 +18,7 @@ const CustomRadioField: React.FC<RadioFieldProps> = ({
   errors = {},
   onValueChange,
 }) => {
-  const [selectedValue, setSelectedValue] = useState<string>(
-    options[0]?.id || ""
-  );
   const [showMessage, setShowMessage] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (selectedValue === "instrument") {
-      setShowMessage(true);
-      setTimeout(() => {
-        setShowMessage(false);
-      }, 5000);
-    }
-  }, [selectedValue]);
 
   return (
     <FormField
@@ -43,11 +31,16 @@ const CustomRadioField: React.FC<RadioFieldProps> = ({
             <RadioGroup
               {...field}
               onValueChange={(value) => {
-                setSelectedValue(value);
                 field.onChange(value);
                 if (onValueChange) onValueChange(value);
+                if (value === "instrument") {
+                  setShowMessage(true);
+                  setTimeout(() => {
+                    setShowMessage(false);
+                  }, 5000);
+                }
               }}
-              value={selectedValue}
+              value={field.value}
               className="flex items-center gap-4 rounded-md border border-gray-200 bg-white px-[14px] py-2"
             >
               {options.map((option) => {
@@ -92,7 +85,7 @@ const CustomRadioField: React.FC<RadioFieldProps> = ({
             ))}
           </FormMessage>
           {/* Show message for specific mode */}
-          {showMessage && selectedValue === "instrument" && (
+          {showMessage && field.value === "instrument" && (
             <p className="mt-2 text-sm text-red-500">
               Instrument mode needs customer details.
             </p>

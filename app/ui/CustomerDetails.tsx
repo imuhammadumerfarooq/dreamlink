@@ -4,22 +4,15 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { z } from "zod";
-import { formSchema } from "../lib/Schema";
-import { UseFormReturn } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { countriesData } from "../lib/constants";
 import CustomCheckboxField from "./CustomCheckboxField";
 import CustomFormField from "./CustomInputField";
 import CustomCountryField from "./CustomCountryField";
+import { FormDetailProps } from "../lib/definitions";
 
-interface customerDetailProps {
-  form: UseFormReturn<z.infer<typeof formSchema>>;
-  state: any;
-}
-
-const CustomerDetails = ({ form, state }: customerDetailProps) => {
+const CustomerDetails = ({ form, state }: FormDetailProps) => {
   const isCustomerVisible = form.watch("isCustomerVisible");
 
   return (
