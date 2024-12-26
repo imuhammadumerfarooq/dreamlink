@@ -64,8 +64,6 @@ export async function createURL(
     postalCode,
   } = validatedFields.data;
 
-  console.log(validatedFields);
-
   try {
     const TBT = await createTBT({
       secretKey: secretKey,

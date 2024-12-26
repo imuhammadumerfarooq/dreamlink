@@ -11,11 +11,15 @@ export default async function fetchCountry({ country }: { country: string }) {
     );
 
     if (!response.ok) {
-      throw new Error("Failed to fetch country data.");
+      throw new Error("Response Error: Failed to fetch country data.");
     }
 
     const data = await response.json();
 
     return data;
-  } catch (error) {}
+  } catch (error) {
+    return {
+      message: "API Error: Failed to fetch country data.",
+    };
+  }
 }

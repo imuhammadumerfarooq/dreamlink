@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import {
   Drawer,
@@ -11,10 +9,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-
-interface DynamicURLProps {
-  url: string;
-}
+import { DynamicURLProps } from "../lib/definitions";
 
 export default function DynamicURL({ url }: DynamicURLProps) {
   return (

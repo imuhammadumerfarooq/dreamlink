@@ -24,6 +24,10 @@ interface FormDetailProps {
   state: any;
 }
 
+interface DynamicURLProps {
+  url: string;
+}
+
 export type Mode = "payment" | "instrument";
 
 export type FieldType =
