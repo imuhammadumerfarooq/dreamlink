@@ -11,21 +11,19 @@ const KeysSchema = z
     mode: z.enum(["payment", "instrument"], {
       invalid_type_error: "Please select payment mode.",
     }),
-    amount: z.number().optional(),
+    amount: z
+      .number()
+      .positive({ message: "Please enter an amount greater than 0." })
+      .optional(),
     environment: z.enum(["development", "sandbox", "production"], {
       invalid_type_error: "Please select a host.",
     }),
   })
   .refine(
-    (data) => {
-      if (data.mode === "payment") {
-        return data.amount;
-      }
-      return true;
-    },
+    (data) => data.mode !== "payment" || (data.amount && data.amount > 0),
     {
-      message: "Please enter amount greater than 0.",
-      path: ["payment"],
+      message: "Please enter an amount greater than 0.",
+      path: ["amount"],
     }
   );
 
