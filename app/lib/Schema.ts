@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { intersection, z } from "zod";
 
 const KeysSchema = z
   .object({
@@ -15,13 +15,6 @@ const KeysSchema = z
     environment: z.enum(["development", "sandbox", "production"], {
       invalid_type_error: "Please select a host.",
     }),
-    isCustomerVisible: z.boolean().default(false),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
-    email: z.string().optional(),
-    phoneNumber: z.string().optional(),
-    customerCountry: z.string().optional(),
-    isGuest: z.boolean(),
   })
   .refine(
     (data) => {
@@ -34,7 +27,18 @@ const KeysSchema = z
       message: "Please enter amount greater than 0.",
       path: ["payment"],
     }
-  )
+  );
+
+const customerSchema = z
+  .object({
+    isCustomerVisible: z.boolean().default(false),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    email: z.string().optional(),
+    phoneNumber: z.string().optional(),
+    customerCountry: z.string().optional(),
+    isGuest: z.boolean(),
+  })
   .refine(
     (data) => {
       if (data.isCustomerVisible === true) {
@@ -125,20 +129,22 @@ const addressSchema = z
     }
   );
 
-export const formSchema = z.intersection(KeysSchema, addressSchema).refine(
-  (data) => {
-    if (data.mode === "instrument") {
-      return (
-        !!data.firstName &&
-        !!data.lastName &&
-        !!data.email &&
-        !!data.phoneNumber &&
-        !!data.customerCountry
-      );
+export const formSchema = z
+  .intersection(KeysSchema, intersection(customerSchema, addressSchema))
+  .refine(
+    (data) => {
+      if (data.mode === "instrument") {
+        return (
+          !!data.firstName &&
+          !!data.lastName &&
+          !!data.email &&
+          !!data.phoneNumber &&
+          !!data.customerCountry
+        );
+      }
+      return true;
+    },
+    {
+      message: "Customer details are required when mode is 'instrument'.",
     }
-    return true;
-  },
-  {
-    message: "Customer details are required when mode is 'instrument'.",
-  }
-);
+  );
