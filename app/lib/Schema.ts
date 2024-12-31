@@ -52,27 +52,49 @@ const customerSchema = z
           path: ["firstName"],
         });
       }
+
       if (!data.lastName || data.lastName.trim() === "") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Last name is required.",
           path: ["lastName"],
         });
+      } else if (data.lastName.length < 3) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Last Name should be at least 3 characters.",
+          path: ["lastName"],
+        });
       }
+
       if (!data.email || data.email.trim() === "") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Email is required.",
           path: ["email"],
         });
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Invalid email format.",
+          path: ["email"],
+        });
       }
+
       if (!data.phoneNumber || data.phoneNumber.trim() === "") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Phone number is required.",
           path: ["phoneNumber"],
         });
+      } else if (!/^\+?[0-9\s-]*$/.test(data.phoneNumber)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Invalid phone number format.",
+          path: ["phoneNumber"],
+        });
       }
+
       if (!data.customerCountry || data.customerCountry.trim() === "") {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
