@@ -25,12 +25,14 @@ export async function createURL(
     mode: formData.get("mode"),
     amount: parseFloat(formData.get("amount") as string) || undefined,
     environment: formData.get("environment"),
-    firstName: formData.get("firstName") ?? "",
-    lastName: formData.get("lastName") ?? "",
-    email: formData.get("email") ?? "",
-    phoneNumber: formData.get("phoneNumber") ?? "",
-    customerCountry: formData.get("customerCountry") ?? "",
+    isCustomerVisible: formData.get("isCustomerVisible") === "on",
+    firstName: formData.get("firstName") || undefined,
+    lastName: formData.get("lastName") || undefined,
+    email: formData.get("email") || undefined,
+    phoneNumber: formData.get("phoneNumber") || undefined,
+    customerCountry: formData.get("customerCountry") || undefined,
     isGuest: formData.get("isGuest") === "on",
+    isAddressVisible: formData.get("isAddressVisible") === "on",
     addressCountry: formData.get("addressCountry") ?? "",
     state: formData.get("state") ?? "",
     city: formData.get("city") ?? "",
@@ -82,7 +84,7 @@ export async function createURL(
 
     tracker = `&tracker=${Tracker}`;
 
-    if (firstName || lastName || email || phoneNumber || customerCountry) {
+    if (firstName && lastName && email && phoneNumber && customerCountry) {
       const customerToken = await createCustomerToken({
         secretKey: secretKey,
         host: Host[environment],
@@ -107,6 +109,7 @@ export async function createURL(
         street: street,
         postalCode: postalCode,
       });
+
       address = addressToken ? `&address=${addressToken}` : "";
     }
 

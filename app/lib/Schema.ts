@@ -37,73 +37,51 @@ const customerSchema = z
     customerCountry: z.string().optional(),
     isGuest: z.boolean(),
   })
-  .refine(
-    (data) => {
-      if (data.isCustomerVisible === true) {
-        return data.firstName;
+  .superRefine((data, ctx) => {
+    if (data.isCustomerVisible) {
+      if (!data.firstName || data.firstName.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "First name is required.",
+          path: ["firstName"],
+        });
+      } else if (data.firstName.length < 3) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "First Name should be at least 3 characters.",
+          path: ["firstName"],
+        });
       }
-      return true;
-    },
-    {
-      message: "First Name should be at least 3 characters.",
-      path: ["firstName"],
+      if (!data.lastName || data.lastName.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Last name is required.",
+          path: ["lastName"],
+        });
+      }
+      if (!data.email || data.email.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Email is required.",
+          path: ["email"],
+        });
+      }
+      if (!data.phoneNumber || data.phoneNumber.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Phone number is required.",
+          path: ["phoneNumber"],
+        });
+      }
+      if (!data.customerCountry || data.customerCountry.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Customer country is required.",
+          path: ["customerCountry"],
+        });
+      }
     }
-  )
-  .refine(
-    (data) => {
-      if (data.isCustomerVisible === true) {
-        return data.lastName;
-      }
-      return true;
-    },
-    {
-      message: "Last Name should be at least 3 characters.",
-      path: ["lastName"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.isCustomerVisible === true) {
-        return data.email;
-      }
-      return true;
-    },
-    { message: "Invalid Email.", path: ["email"] }
-  )
-  .refine(
-    (data) => {
-      if (data.isCustomerVisible === true) {
-        return data.phoneNumber;
-      }
-      return true;
-    },
-    {
-      message: "Phone Number contains at least 11 digits.",
-      path: ["phoneNumber"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.isCustomerVisible === true) {
-        return data.customerCountry;
-      }
-      return true;
-    },
-    {
-      path: ["customerCountry"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.isCustomerVisible === true) {
-        return !!data;
-      }
-      return true;
-    },
-    {
-      path: ["isGuest"],
-    }
-  );
+  });
 
 const addressSchema = z
   .object({
@@ -114,10 +92,21 @@ const addressSchema = z
     street: z.string().optional(),
     postalCode: z.string().optional(),
   })
+  .superRefine((data, ctx) => {
+    if (data.isAddressVisible) {
+      if (!data.addressCountry || data.addressCountry.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Customer country is required.",
+          path: ["addressCountry"],
+        });
+      }
+    }
+  })
   .refine(
     (data) => {
       if (data.isAddressVisible === true) {
-        return !!data.addressCountry;
+        return data.addressCountry && data.addressCountry.trim() !== "";
       }
       return true;
     },
