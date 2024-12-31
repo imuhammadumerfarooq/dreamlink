@@ -125,18 +125,49 @@ const addressSchema = z
       }
     }
   })
-  .refine(
-    (data) => {
-      if (data.isAddressVisible === true) {
-        return data.addressCountry && data.addressCountry.trim() !== "";
+  .superRefine((data, ctx) => {
+    if (data.isAddressVisible === true) {
+      if (!data.addressCountry || data.addressCountry.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "country is required.",
+          path: ["addressCountry"],
+        });
       }
-      return true;
-    },
-    {
-      message: "Select a country.",
-      path: ["addressCountry"],
+
+      if (!data.city || data.city.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "City is required.",
+          path: ["city"],
+        });
+      }
+
+      if (!data.state || data.state.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "State is required.",
+          path: ["state"],
+        });
+      }
+
+      if (!data.street || data.street.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Street is required.",
+          path: ["street"],
+        });
+      }
+
+      if (!data.postalCode || data.postalCode.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Postal Code is required.",
+          path: ["postalCode"],
+        });
+      }
     }
-  );
+  });
 
 export const formSchema = z
   .intersection(KeysSchema, intersection(customerSchema, addressSchema))
